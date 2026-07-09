@@ -1,0 +1,53 @@
+**Build small library that pulls data and computes basic quantities**
+- **Steps**
+  - Pull historical price data
+  - Compute daily simple and log returns
+  - Compute rolling volatility and moving averages
+  - Compute a correlation matrix among several stocks and plot as heat map
+- Data - Yfinance (sandp 500)
+- **Simple Returns**
+-     (pt - p(t-1))/p(t-1)
+- **Log Returns**
+-     log(pt/pt-1)
+- Log returns are lower than simple
+- Why Log returns are better:
+  - To find total return over multiple days you can just add individual log returns together instead of recomputing with complex returns
+  -     Log (a x b) = log a + log b
+  - Simple returns have max -100% loss but infinite upside however log returns are more symmetrical since a gain/loss of any percent cancel each other out when added
+  - Log returns are continuous (assume continuous compounding)
+- Why they are worse:
+  - They don’t aggregate across multiple assets and you cannot add the weighted averages of them together.
+  -     Log (a + b) =/ log a + log b
+  - You can fix this by getting simple returns of assets, then getting weighted avgs to get overall simple return and then converting to log return by taking ln (1 + return)
+- All based on log rules
+- Use e/ln to undo/redo anything and bc it is very close to acc return
+-     (ex: ln(1.02)=0.0198)
+
+- **Moving averages** calculate avg of stock returns over specific amount of time
+-     (ex: 20 day sma)
+  - Simple - Each day is weighted equally
+  - Exponential - Days closer to recent are weighted more
+  - Calculate - Take avg of prices in a time frame/window, move forward each time
+- **Rolling volatility** is std deviation over period of time
+  - Calculate - 
+    - Find daily percent returns ((todays price - yesterday price)/yesterday price) x 100
+    - Find average of returns in window
+    - Subtract avg from each individual return and square results
+    - Add them up and divide by n-1 days
+    - Take the square root of the result
+- Both measure risk and spot trends
+
+- **Correlation Matrix**
+  - Calculating the relationship between stocks and how they move
+  - 1 = move same way, 0 = no correlation, -1 = move opposite ways
+  - Calculate - 
+    - Get daily percentage returns
+    - Find the average returns for each stock
+    - Calculate deviations daily - mean - price on day
+    - Calculate top of covariance eqn - multiply daily deviations for each day, add up all of the daily deviations for each day
+      - If both stocks were above average on the same day, the result is positive.
+      - If both were below average, the result is also positive (negative × negative).
+      - If one was up and the other was down, the result is negative.
+    - Standardize numbers on bottom of eqn - Square daily deviations from step 4, Sum the squared value for each deviation for both stocks, multiply the sums together, take the sqrt of that number
+    - Divide result from step 5 by step 6 result which shows correlation
+    - Make grid by listing all of stocks vertically and horizontally
