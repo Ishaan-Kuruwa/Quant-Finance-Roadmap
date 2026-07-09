@@ -1,0 +1,13 @@
+- Simulate thousands of possible future price paths for a stock and analyze the range of outcomes.
+- Build:
+  - Simulate price paths using Geometric Brownian Motion in its discrete form:
+  -     S_next = S * exp((mu - 0.5*sigma²)*dt + sigma*√dt * Z), where Z is a standard normal draw.
+  - Run 10,000+ paths; plot them; build a histogram of final prices.
+  - Estimate things like "probability the price ends above X."
+- To fully explain, master:
+  - Random walks and why stock prices are often modeled as one.
+  - The normal distribution and where the random Z comes from.
+  - Drift (mu) vs. volatility (sigma) — the two forces in the model.
+  - The log-normal shape of the outcome distribution and why prices can't go negative here.
+- Calculus later:
+-   The -0.5*sigma² correction term comes from Itô's lemma in stochastic calculus. For now, understand it empirically — simulate with and without it and watch what happens to the average.
