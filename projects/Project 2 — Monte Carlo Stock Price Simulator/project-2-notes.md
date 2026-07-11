@@ -9,5 +9,18 @@
   - The normal distribution and where the random Z comes from.
   - Drift (mu) vs. volatility (sigma) — the two forces in the model.
   - The log-normal shape of the outcome distribution and why prices can't go negative here.
-- Calculus later:
--   The -0.5*sigma² correction term comes from Itô's lemma in stochastic calculus. For now, understand it empirically — simulate with and without it and watch what happens to the average.
+- Calculus later: The -0.5*sigma² correction term comes from Itô's lemma in stochastic calculus. For now, understand it empirically — simulate with and without it and watch what happens to the average. After Calc BC + a stochastic calculus intro, you'll be able to derive exactly why it's there. Being able to say "I understand what it does and I know the derivation requires tools I'm learning next" is a completely honest, strong answer.
+- Random Walk - A mathematical model that describes a path of random steps
+  - The hypothesis says that stocks move in a random way since past trends don’t predict the future and so each movement in the future is independent of the last movement
+- Stock Prices can be modeled by Random Walks due to this idea
+- Normal Distribution is like a bell curve, where the least likely outcomes are on the outside (closer to 0/1) and more likely outcomes are closer to 0.5
+- We are actually using a physics idea called Geometric Brownian Motion
+- The “Z” comes from a random number in this distribution which represents market shocks
+- Drift v.s. Volatility
+  - Drift - Overall movement of a stock over longer period of time (Predictable)
+  - Volatility - Shorter-term, quicker movements of stock (Random)
+- Log Normal Distributions allow for:
+  - No negative prices
+  - Infinite Upside
+  - Natural Log of stock’s future price is normally distributed
+  - Stock returns compound continuously over time
