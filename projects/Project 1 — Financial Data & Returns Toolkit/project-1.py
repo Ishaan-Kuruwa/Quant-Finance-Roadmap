@@ -34,6 +34,24 @@ class Data_Analysis:
         # Log Returns allow you to find total returns over multiple days by just adding individual logs instead of recomputing with Simple Returns
         # Log Returns are also more symmetrical unlike Simple Returns which have maximum loss of -100% but infinite upside
         # Log Returns are also continous
+    
+    def log_additive (self):
+        # We can verify that log returns are actually additive
+        # We can recreate a 30-day log return
+        # NOTE: We can understand this idea via telescoping:
+        # Eqn: ln (P1 / P0) + ln (P2 / P1)... ln(Pn / Pn-1)
+        # Using Log rules we get = ln (P1 / P0 * P2 / P1.... Pn / Pn-1)
+        # Using telescoping cancellation we get = ln (Pn / P0)
+        actual_return = (self.spy["Close"].iloc[31] / self.spy["Close"].iloc[1]) - 1
+        log_return = 0
+        simple_return = 0
+        for i in range (2, 32):
+            log_return += np.log (self.spy["Close"].iloc[i] / self.spy["Close"].iloc[i-1])
+            simple_return += (self.spy["Close"].iloc[i] / self.spy["Close"].iloc[i-1]) - 1
+        
+        log_return = np.exp (log_return) - 1
+
+        print (actual_return, log_return, simple_return)
 
     def moving_average (self):
         # Moving Averages
@@ -53,12 +71,23 @@ class Data_Analysis:
         for i in range (10, len(self.spy)):
             weight = 1
             total = 0
-            for j in range (i-9, i+1):
+            for j in range (i, i-10, -1):
                 weight *= 1/2
                 total += (self.spy["Close"].iloc[j] * weight)
             self.spy.at [self.spy.index[i], "Exponential 10-day SMA"] = total
+        
+        # ALSO Recursive Form: EMA = alpha * P_t + (1 - alpha) * EMA (t-1) a = alpha - 2 / (span + 1)
+        self.prices = self.spy["Close"]
+        a = 2 / (10 + 1)
+        self.spy["Recursive Exponential SMA"] = np.nan
+        self.spy.at [self.spy.index[0], "Recursive Exponential SMA"] = self.prices.iloc[0]
+        for i in range (1, len(self.spy)):
+            ema = ((a * self.prices.iloc[i]) + (1-a) * self.spy["Recursive Exponential SMA"].iloc[i-1])
+
+            self.spy.at [self.spy.index[i], "Recursive Exponential SMA"] = ema
 
         plt.title ("Moving Averages")
+        plt.plot (self.spy["Recursive Exponential SMA"])
         plt.plot (self.spy["Close"])
         plt.plot (self.spy["Simple 50-day SMA"])
         plt.plot (self.spy["Exponential 10-day SMA"])
@@ -163,9 +192,48 @@ class Data_Analysis:
         # 6. Divide Equation
         self.matr = self.numer / self.denom
     
+    def calc_ratios (self):
+        # Calculate Sharpe Ratio = (Annualized Return - Risk-free Rate) / (Annualized Volatility)
+        # 1. Calculate Avg Annual Returns
+        self.spy_avg = 0
+        for i in range (1, len(self.spy)):
+            self.spy_avg += self.spy["Simple Daily Returns"].iloc[i]
+        
+        self.spy_avg /= (len(self.spy)-1)
+        self.spy_annual_avg = self.spy_avg * 252
+
+        # 2. Calculate Annual Std Deviations by hand
+        self.spy_vol = 0
+        for i in range (1, len(self.spy)):
+            dev = self.spy_avg - self.spy["Simple Daily Returns"].iloc[i]
+            dev = dev ** 2
+            self.spy_vol += dev
+
+        self.spy_vol /= (len(self.spy) - 2) # -1 for missing first day and -1 for sample size (n-1)
+        self.spy_vol = np.sqrt (self.spy_vol)
+        self.spy_vol *= np.sqrt (252)
+
+        # 3. Pull 10-yr Trasury Bill
+        ten_yr_treasury = yf.Ticker ("^IRX")
+        historical_yields = ten_yr_treasury.history (start="2021-01-01", end="2026-01-01")
+        self.rfr = (historical_yields["Close"].iloc[-1]) / 100
+
+        self.sharpe_ratio = (self.spy_annual_avg - self.rfr) / (self.spy_vol)
+        print ("Sharpe Ratio: ", self.sharpe_ratio)
+
+        # Calculate Max Drawdown = ((trough value - peak value) / (peak value)) * 100
+        # Make sure to measure as peak is before trough comes
+        peak = 0
+        self.drawdown = 0
+        for i in range (len (self.spy)):
+            curr_price = self.spy["Close"].iloc[i]
+            if curr_price > peak: peak = curr_price
+            self.drawdown = min (((curr_price - peak) / (peak)) * 100, self.drawdown)
+        
+        print ("Max Drawdown: ", self.drawdown)
+    
     def corr_matrix (self):
         # 7. Plot Correlation Matrix
-        np.random.seed(42)
         self.matr = self.matr.reshape (3, 3) # Reshape Data to fit 3x3 grid
         data = pd.DataFrame(self.matr, columns=["AAPL", "MSFT", "XOM"])
 
@@ -187,9 +255,10 @@ class Data_Analysis:
         # Fast Solution
         returns = pd.concat ([self.aapl["returns"], self.msft["returns"], self.xom["returns"]], axis=1)
         corr_matrix = returns.corr()
-        print (corr_matrix)
+        print ("Correlation Matrix: ", corr_matrix)
     
     def run (self):
+        self.log_additive()
         self.collect_returns()
         self.moving_average()
         self.rolling_volatility()
@@ -200,7 +269,9 @@ class Data_Analysis:
         self.squared_devs()
         self.calc_denom()
         self.divide()
+        self.calc_ratios()
         self.corr_matrix()
+        self.see_data()
 
-analysis = Data_Analysis ()
+analysis = Data_Analysis()
 analysis.run()
