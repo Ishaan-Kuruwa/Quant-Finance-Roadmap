@@ -26,10 +26,23 @@ Understand how to work with financial data and the basic quantities to calculate
 
 ## The concepts
 
-[One subsection per concept. For EACH one:
-  - What it is (the formula)
-  - WHY it's defined that way (the intuition — this is the valuable part)
-  - The gotcha that bites people
-  - Which test pins it down]
+- Returns (Simple & Log) - Finding difference in price today vs price yesterday in percent
+-   Simple Returns
+-     (pt - p(t-1)) / p(t-1)
+-   Log Returns 
+-     log (pt/p(t-1))
+  
+- Rolling Volatility - Finds volatility of a stock over a time period
+-     std deviation = sqrt (summation (mean - return)**2 / (n-1))
+-     std deviation of returns * sqrt(252) (only for annualization)
 
-- 
+- Moving Averages - Finds average price of a stock over a time period
+-   Simple Moving Average
+-     sum of prices / n
+-   Exponential Moving Average
+-     Recursive - (a * price(t)) + ((1-a) * price(t-1))
+-     a = 2 / n+1
+  
+- Correlation Matrix
+-     cov (x, y) / ox * oy
+-     Check out notes for full equation.
