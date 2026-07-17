@@ -58,13 +58,14 @@ class Simulation:
     def generate_sim (self):
         # Run 10,000+ paths; plot them; build a histogram of final prices.
         self.final_prices = []
+        np.random.seed(42)
         for i in range (10000): # 10,000 paths
             starting_price = self.aapl["Close"].iloc[-1] # Initial stock Price
-            path = []
+            path = [starting_price]
             for j in range (60): # 60 months for 5 years
                 self.Z = np.random.normal (0, 1)
                 # Full equation below
-                next_price = starting_price * np.exp ( ((self.drift_rate - (self.annualized_volatility ** 2) / 2) * (1/12)) + (self.annualized_volatility * np.sqrt(1/12) * self.Z))
+                next_price = starting_price * np.exp ( ((self.drift_rate) * (1/12)) + (self.annualized_volatility * np.sqrt(1/12) * self.Z))
                 path.append (next_price)
 
                 starting_price = next_price
@@ -73,6 +74,18 @@ class Simulation:
         
         plt.show()
     
+    def verify_sim (self):
+        S0 = self.aapl["Close"].iloc[-1]
+        mu = self.drift_rate
+        sigma = self.annualized_volatility
+        T = self.time
+
+        theo_median = S0 * np.exp (mu * T)
+        theo_mean = S0 * np.exp ((mu + 0.8 * sigma**2) * T)
+
+        print (theo_median, np.median (self.final_prices))
+        print (theo_mean, np.mean (self.final_prices))
+
     def plot_hist (self):
         plt.hist (self.final_prices, bins=50) # Histogram of final prices
         plt.show()
@@ -85,15 +98,18 @@ class Simulation:
         print (probability)
         print (np.median (self.final_prices))
         print (np.mean (self.final_prices))
+        print (np.percentile (self.final_prices, 25))
+        print (np.percentile (self.final_prices, 75))
 
     def run (self):
         self.variables()
         self.volatility()
         self.drift()
         self.generate_sim()
-        self.plot_hist()
+        #self.plot_hist()
         self.probability()
         self.see_data()
+        self.verify_sim()
 
 simulation = Simulation()
 simulation.run()
