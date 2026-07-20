@@ -1,1 +1,35 @@
+- Build:
+  - Compute expected returns and the covariance matrix for a set of stocks.
+  - Generate thousands of random portfolios, plot them in risk-vs-return space, and watch the efficient frontier appear.
+  - Find the maximum-Sharpe-ratio portfolio (start with the random-search approach; then optionally use scipy.optimize).
+- To fully explain, master:
+  - Diversification: why combining imperfectly-correlated assets reduces risk — this is the single most beautiful idea in the project.
+  - The covariance matrix as the object that encodes how assets move together (a great, concrete use of matrices — no proofs needed, just matrix operations in NumPy).
+  - The Sharpe ratio as return per unit of risk.
+- Calculus later: The closed-form solution for the optimal weights uses Lagrange multipliers (multivariable calculus). You don't need it — the random-search and scipy approaches give the same answer and are arguably more intuitive. Revisit the analytic version after calculus for a satisfying "oh, that's why" moment.
+- Portfolio = N Assets, N Weights that add up to 1 [W1, W2, … Wn]
+- Portfolio Return = W1 * R1 + W2 * R2… + Wn * Rn = (w * r) - Dot Product
+- Portfolio Risk = How assets move together
+  - Portfolio Variance = W^T * Covariance Matrix * W
+  - Portfolio Volatility = sqrt (Portfolio Variance)
+- Covariance Matrix = NxN Matrix
+  - Diagonal is each assets variance - volatility squared
+  - Off-diagonals are co-movement between assets
+  - Steps to Calculate
+    - For each pair of assets, Add the product of the deviations of the two assets for each day, divide by the # of days, and annualize (x252)
+    - We use covariance instead of correlation because correlation takes out volatility but produces easier to understand quantities (-1 - 1) Covariance includes volatility which lets us understand assets’ movement better
+- Plot each possible portfolio (Simulation)
+  - Graph (X - Volatility, Y - Return)
+  - Look for lowest volatility, highest return
+  - Look for Upper, lowest
+  - Sharpe Ratio = (Portfolio Return - Risk-Free Rate) / (Portfolio Volatility)
+- Find efficient frontier using optimize or guessing
+- Steps for portfolio optimization
+  - Calculate annualized mean returns
+  - Create covariance matrix
+  - Calculate portfolio return
+  - Calculate portfolio volatility
+  - Simulate portfolios
+  - Plot portfolios
+
 
