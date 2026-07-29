@@ -1,0 +1,42 @@
+- Build:
+  - A backtester that takes a strategy, applies it to historical data, and tracks a simulated portfolio over time.
+  - Implement a simple strategy (e.g., moving-average crossover or momentum).
+  - Report CAGR, Sharpe ratio, and maximum drawdown, and plot the equity curve vs. buy-and-hold.
+  - Add transaction costs and watch profits shrink.
+- To fully explain, master:
+  - Look-ahead bias: accidentally using information from the future (e.g., today's closing price to make today's trade). This is the #1 way backtests lie.
+  - Overfitting: tweaking parameters until the backtest looks amazing on past data but fails going forward.
+  - Survivorship bias: testing only on companies that still exist today.
+  - Performance metrics: what drawdown and Sharpe actually tell you.
+- Backtesting Pipeline:
+  - Signal - What the strategy Thinks
+  - Position - What you actually hold (long, flat, short)
+  - Strategy Returns - Position x Asset’s return minus cost
+  - Equity Curve - The cumulative product of those returns
+- Look-Ahead Bias
+  - Using information you couldn’t have had the time of decision
+  - Shift 1 day earlier
+- Overfitting
+  - Tuning parameters to be great on previous data, but not generalizing enough for the future
+- Survivorship Bias
+  - Ignoring companies that aren’t in data
+  - Companies alive today have already survived
+- Transaction Costs
+  - Costs scale with turnover, important to include
+- Metrics
+  - CAGR - Compounded annual growth rate
+  - Sharpe - Return per risk
+  - Max Drawdown - Worst decline from peak to trough
+  - Turnover - How often you trade
+  - Time in Market - Fraction of days you were exposed
+- Steps:
+  - Hand Compute P&L
+  - Create engine
+    - Need: Prices of asset, strategy, transaction costs
+    - For each day in data, take strategies desired choice and simulate it
+    - Calculate final metrics from strategy
+  - Create three strategies to test
+  - Create Metrics above
+  - Show backtests vs buy-and-hold
+
+
